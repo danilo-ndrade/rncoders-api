@@ -21,6 +21,8 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', User::class);
+
         $users = $this->user->orderBy('name', 'DESC')->get();
 
         return response()->json($users);
@@ -34,6 +36,7 @@ class UserController extends Controller
      */
     public function store(UserFormRequest $request)
     {
+        $this->authorize('create', User::class);
         $user = User::create($request->all());
         return response()->json(['user' => $user], 201);
     }
@@ -46,6 +49,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        $this->authorize('view', $user);
         return response()->json($user);
     }
 
@@ -58,6 +62,7 @@ class UserController extends Controller
      */
     public function update(UserFormRequest $request, User $user)
     {
+        $this->authorize('update', $user);
         $user->update($request->all());
 
         return response()->json(['user' => $user]);
@@ -71,7 +76,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-
+        $this->authorize('delete', $user);
         $user = $user->destroy($user->id);
 
         return response()->json($user);
