@@ -19,7 +19,9 @@ class AuthController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return $this->respondWithToken($token);
+        $user = request()->user();
+
+        return $this->respondWithToken($token, $user);
     }
     public function me()
     {
@@ -38,9 +40,13 @@ class AuthController extends Controller
         return $this->respondWithToken(auth()->refresh());
     }
 
-    protected function respondWithToken($token)
+    protected function respondWithToken($token, $user = null)
     {
+        $permissions = !is_null($user) ? $user->permissions() : [];
+
         return response()->json([
+            'user' => $user,
+            'permissions' => $permissions,
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60

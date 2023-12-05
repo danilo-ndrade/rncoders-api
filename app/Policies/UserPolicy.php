@@ -12,7 +12,7 @@ class UserPolicy
      */
     public function viewAny(User $user): Response
     {
-        return $user->hasPermissionTo('view-all-users')
+        return $user->hasPermissionTo('ver-todos-os-usuarios')
             ? Response::allow()
             : Response::deny('Você não tem permissão para visualizar todos os usuários');
     }
@@ -22,7 +22,7 @@ class UserPolicy
      */
     public function view(User $user, User $model): Response
     {
-        return ($user->hasPermissionTo('view-all-users') || ($user->hasPermissionTo('view-user') && ($user->id === $model->user_id)))
+        return ($user->hasPermissionTo('ver-todos-os-usuarios') || ($user->hasPermissionTo('ver-usuarios') && ($user->id === $model->user_id)))
             ? Response::allow()
             : Response::deny('Você não tem permissão para visualizar este usuário');
     }
@@ -32,7 +32,7 @@ class UserPolicy
      */
     public function create(User $user): Response
     {
-        return $user->hasPermissionTo('create-user')
+        return $user->hasPermissionTo('criar-usuarios')
             ? Response::allow()
             : Response::deny('Você não tem permissão para criar usuários');
     }
@@ -42,7 +42,7 @@ class UserPolicy
      */
     public function update(User $user, User $model): Response
     {
-        return ($user->hasPermissionTo('update-all-users') || ($user->hasPermissionTo('update-user') && ($user->id === $model->user_id)))
+        return ($user->hasPermissionTo('editar-todos-os-usuarios') || ($user->hasPermissionTo('editar-usuarios') && ($user->id === $model->user_id)))
             ? Response::allow()
             : Response::deny('Você não tem permissão para atualizar este usuário');
     }
@@ -52,7 +52,7 @@ class UserPolicy
      */
     public function delete(User $user, User $model): Response
     {
-        return ($user->hasPermissionTo('delete-all-users') || ($user->hasPermissionTo('delete-user') && ($user->id === $model->user_id)))
+        return ($user->hasPermissionTo('excluir-todos-os-usuarios') || ($user->hasPermissionTo('excluir-usuarios') && ($user->id === $model->user_id)))
             ? Response::allow()
             : Response::deny('Você não tem permissão para deletar este usuário');
     }

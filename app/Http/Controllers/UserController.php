@@ -37,8 +37,14 @@ class UserController extends Controller
     public function store(UserFormRequest $request)
     {
         $this->authorize('create', User::class);
-        $user = User::create($request->all());
-        return response()->json(['user' => $user], 201);
+
+        try {
+            $user = $this->user->create($request->all());
+
+            return response()->json(['user' => $user], 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -63,9 +69,14 @@ class UserController extends Controller
     public function update(UserFormRequest $request, User $user)
     {
         $this->authorize('update', $user);
-        $user->update($request->all());
+        
+        try {
+            $user->update($request->all());
 
-        return response()->json(['user' => $user]);
+            return response()->json(['user' => $user], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -77,8 +88,15 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $this->authorize('delete', $user);
-        $user = $user->destroy($user->id);
+        
+        try {
+            $this->user->destroy($user->id);
 
-        return response()->json($user);
+            return response()->json([
+                'message' => 'Usuário deletado com sucesso!'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }
