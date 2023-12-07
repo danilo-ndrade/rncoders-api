@@ -2,8 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\NewPasswordController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\TagController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,8 +26,10 @@ Route::group([
 ], function () {
     Route::apiResources([
         'users' => UserController::class,
+        'tags' => TagController::class,
+        'categories' => CategoryController::class,
+        'posts' => PostController::class,
     ]);
-
 });
 
 

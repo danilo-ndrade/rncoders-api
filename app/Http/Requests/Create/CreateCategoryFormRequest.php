@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Create;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -26,8 +26,7 @@ class CreateCategoryFormRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|max:255|unique:categories',
-            'slug' => 'required|max:255|unique:categories',
+            'name' => 'required|max:255|unique:categories'
         ];
     }
 }

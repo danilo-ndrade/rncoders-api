@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Update;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -26,8 +26,7 @@ class UpdateCategoryFormRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|max:255|unique:categories,name,' . $this->category->id,
-            'slug' => 'required|max:255|unique:categories,slug,' . $this->category->id,
+            'name' => 'required|max:255|unique:categories,name,' . $this->segment(3)
         ];
     }
 }

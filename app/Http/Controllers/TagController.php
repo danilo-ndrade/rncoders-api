@@ -74,8 +74,11 @@ class TagController extends Controller
         $this->authorize('create', Tag::class);
 
         try {
-            $tag = $this->tag->create($request->all());
-            return response()->json(['tag' => $tag], 201);
+            $dataForm = $request->all();
+            $dataForm['user_id'] = $request->user()->id;
+
+            $tag = $this->tag->create($dataForm);
+            return response()->json($tag, 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -97,7 +100,7 @@ class TagController extends Controller
         try {
             $tag->update($request->all());
 
-            return response()->json(['tag' => $tag], 200);
+            return response()->json($tag, 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
