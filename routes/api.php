@@ -30,7 +30,7 @@ Route::group([
         'tags' => TagController::class,
         'categories' => CategoryController::class,
         'post' => PostController::class,
-        'teams' => TeamController::class,
+        'team' => TeamController::class,
         'portfolio' => PortfolioController::class,
         'client' => ClientController::class,
     ]);
@@ -42,3 +42,4 @@ Route::group([
 // Password recovery
 Route::post('forgot-password', [NewPasswordController::class , 'forgotPassword']);
 Route::put('reset-password', [NewPasswordController::class, 'resetPassword']);
+

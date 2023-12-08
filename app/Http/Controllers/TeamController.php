@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\File;
 use App\Models\Team;
 use Illuminate\Http\Request;
 use App\Http\Requests\TeamFormRequest;
@@ -28,6 +29,7 @@ class TeamController extends Controller
      */
     public function index(Request $request)
     {
+		
         if (!$request->user()->hasPermissionTo('visualizar-todas-as-equipes') && !$request->user()->hasPermissionTo('visualizar-equipes')) {
             return response()->json(['error' => 'Not Authorized'], 403);
         }
@@ -37,7 +39,7 @@ class TeamController extends Controller
         } else {
             $team = $this->team->where('id', $request->user()->id)->paginate(10);
         }
-
+        
         return response()->json($teams);
     }
 
@@ -75,9 +77,26 @@ class TeamController extends Controller
         $this->authorize('create', Team::class);
 
         try {
-            $dataForm = $request->all();
-           
-            $team = $this->team->create($dataForm);
+            $team = $this->team->create($request->all());
+            
+            if ($request->file && $request->file->isValid()) {
+                $file = $request->file;
+                $fileName = time().'-'.$file->getClientOriginalName();
+                $upload = Storage::disk('spaces')->put('files', $file);
+
+                if ($upload) {
+                    $file = new File([
+                        'name' => $fileName,
+                        'url'  => $upload,
+                        'extension' => $file->getClientOriginalExtension(),
+                        'size' => $file->getSize(),
+                    ]);
+
+                    $team->file()->save($file);
+                }
+            }              
+            
+            
             return response()->json($team, 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -99,6 +118,23 @@ class TeamController extends Controller
 
         try {
             $team->update($request->all());
+            
+            if ($request->file && $request->file->isValid()) {
+                $file = $request->file;
+                $fileName=time().'-'.$file->getClientOriginalName();
+                $upload = Storage::disk('spaces')->put('files', $file);
+
+                if ($upload) {
+                    $file = new File([
+                        'name' => $fileName,
+                        'url'  => $upload,
+                        'extension' => $file->getClientOriginalExtension(),
+                        'size' => $file->getSize(),
+                    ]);
+
+                    $team->file()->save($file);
+                }
+            }
 
             return response()->json($team, 200);
         } catch (\Exception $e) {

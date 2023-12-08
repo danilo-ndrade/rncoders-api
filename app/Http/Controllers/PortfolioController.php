@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\File;
 use App\Models\Portfolio;
 use Illuminate\Http\Request;
 use App\Http\Requests\PortfolioFormRequest;
@@ -75,9 +76,25 @@ class PortfolioController extends Controller
         $this->authorize('create', Portfolio::class);
 
         try {
-            $dataForm = $request->all();
+           $portfolio = $this->portfolio->create($request->all());
+            
+            if ($request->file && $request->file->isValid()) {
+                $file = $request->file;
+                $fileName = time().'-'.$file->getClientOriginalName();
+                $upload = Storage::disk('spaces')->put('files', $file);
+
+                if ($upload) {
+                    $file = new File([
+                        'name' => $fileName,
+                        'url'  => $upload,
+                        'extension' => $file->getClientOriginalExtension(),
+                        'size' => $file->getSize(),
+                    ]);
+
+                    $portfolio->file()->save($file);
+                }
+            }              
            
-            $team = $this->portfolio->create($dataForm);
             return response()->json($portfolio, 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -99,6 +116,23 @@ class PortfolioController extends Controller
 
         try {
             $portfolio->update($request->all());
+            
+            if ($request->file && $request->file->isValid()) {
+                $file = $request->file;
+                $fileName=time().'-'.$file->getClientOriginalName();
+                $upload = Storage::disk('spaces')->put('files', $file);
+
+                if ($upload) {
+                    $file = new File([
+                        'name' => $fileName,
+                        'url'  => $upload,
+                        'extension' => $file->getClientOriginalExtension(),
+                        'size' => $file->getSize(),
+                    ]);
+
+                    $portfolio->file()->save($file);
+                }
+            }
 
             return response()->json($portfolio, 200);
         } catch (\Exception $e) {

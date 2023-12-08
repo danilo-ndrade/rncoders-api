@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\File;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use App\Http\Requests\ClientFormRequest;
@@ -72,11 +73,27 @@ class ClientController extends Controller
     {
         $this->authorize('create', Client::class);
 
-        try {
-            $dataForm = $request->all();
-           
+        try {           
+            $client = $this->client->create($request->all());
+            
+            if ($request->file && $request->file->isValid()) {
+                $file = $request->file;
+                $fileName = time().'-'.$file->getClientOriginalName();
+                $upload = Storage::disk('spaces')->put('files', $file);
 
-            $client = $this->client->create($dataForm);
+                if ($upload) {
+                    $file = new File([
+                        'name' => $fileName,
+                        'url'  => $upload,
+                        'extension' => $file->getClientOriginalExtension(),
+                        'size' => $file->getSize(),
+                    ]);
+
+                    $client->file()->save($file);
+                }
+            }           
+
+            
             return response()->json($client, 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -98,6 +115,23 @@ class ClientController extends Controller
 
         try {
             $client->update($request->all());
+            
+            if ($request->file && $request->file->isValid()) {
+                $file = $request->file;
+                $fileName=time().'-'.$file->getClientOriginalName();
+                $upload = Storage::disk('spaces')->put('files', $file);
+
+                if ($upload) {
+                    $file = new File([
+                        'name' => $fileName,
+                        'url'  => $upload,
+                        'extension' => $file->getClientOriginalExtension(),
+                        'size' => $file->getSize(),
+                    ]);
+
+                    $client->file()->save($file);
+                }
+            }
 
             return response()->json($client, 200);
         } catch (\Exception $e) {
